@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>login</title>
+        <link rel="stylesheet" href="login.css">
+    </head> 
+    <body>
+    <div class="logincontainer">
+        <div class="content">
+        <h1>Welcome back,</h1>
+        <form id="loginForm">
+        <input type="e-mail" placeholder="e-mail" id="email"></button>
+        <br>
+        <input type="password" id="password" placeholder="password"></button>
+        <br>
+        <button type="submit" class="loginbtn"><a class="loginlink" href="home.html">login</a></button>
+        </form>
+        <div>
+            <p>Don't have an account ?  <a class="singup" href="singup.html">sing up</a></p>
+        </div>
+    </div>
+<script>
+    const form = document.getElementById(loginform)
+    const emailvalue = document.getElementById(email)
+</script>
+<script type="module">
+  // استيراد الدوال الضرورية من Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+  // كود الإعداد الذي حصلت عليه من Firebase Console
+  const firebaseConfig = {
+    apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
+    authDomain: "coratn-6de48.firebaseapp.com",
+    projectId: "coratn-6de48",
+    storageBucket: "coratn-6de48.firebasestorage.app",
+    messagingSenderId: "249208103888",
+    appId: "1:249208103888:web:9403ce3af4c00bfe6f0fd5",
+    measurementId: "G-WQM9SRLPN9"
+  };
+
+  // تهيئة Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // ربط الزر بالدالة
+  window.signInWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // إذا نجح تسجيل الدخول
+        console.log("تم تسجيل الدخول بنجاح:", result.user);
+        alert("مرحباً بك يا " + result.user.displayName);
+      })
+      .catch((error) => {
+        // إذا حدث خطأ
+        console.error("حدث خطأ:", error);
+      });
+  };
+</script>
+    </body>
+</html>
