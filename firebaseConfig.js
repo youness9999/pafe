@@ -21,20 +21,13 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export { app };
 //.....
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+import { getAuth, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 
-const loginWithGoogle = () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      // تم تسجيل الدخول بنجاح
-      console.log("User signed in:", result.user);
-    })
-    .catch((error) => {
-      // هنا سيظهر لك سبب الإغلاق المفاجئ في الـ Console
-      console.error("Error code:", error.code);
-      console.error("Error message:", error.message);
-    });
+// استبدل دالة تسجيل الدخول بهذا الكود
+const login = () => {
+  signInWithRedirect(auth, provider);
 };

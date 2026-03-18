@@ -1,62 +1,91 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>login</title>
-        <link rel="stylesheet" href="login.css">
-    </head> 
-    <body>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
     <div class="logincontainer">
-        <div class="content">
+      <div class="content">
         <h1>Welcome back,</h1>
         <form id="loginForm">
-        <input type="e-mail" placeholder="e-mail" id="email"></button>
-        <br>
-        <input type="password" id="password" placeholder="password"></button>
-        <br>
-        <button type="submit" class="loginbtn"><a class="loginlink" href="home.html">login</a></button>
+          <input type="email" placeholder="e-mail" id="email" required />
+          <br />
+          <input
+            type="password"
+            id="password"
+            placeholder="password"
+            required
+          />
+          <br />
+          <button type="submit" class="loginbtn">Login</button>
         </form>
+
+        <button onclick="signInWithGoogle()" class="googlebtn">
+          Sign in with Google
+        </button>
+
         <div>
-            <p>Don't have an account ?  <a class="singup" href="singup.html">sing up</a></p>
+          <p>
+            Don't have an account?
+            <a class="singup" href="singup.html">Sign up</a>
+          </p>
         </div>
+      </div>
     </div>
-<script>
-    const form = document.getElementById(loginform)
-    const emailvalue = document.getElementById(email)
-</script>
-<script type="module">
-  // استيراد الدوال الضرورية من Firebase
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-  // كود الإعداد الذي حصلت عليه من Firebase Console
-  const firebaseConfig = {
-    apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
-    authDomain: "coratn-6de48.firebaseapp.com",
-    projectId: "coratn-6de48",
-    storageBucket: "coratn-6de48.firebasestorage.app",
-    messagingSenderId: "249208103888",
-    appId: "1:249208103888:web:9403ce3af4c00bfe6f0fd5",
-    measurementId: "G-WQM9SRLPN9"
-  };
+    <script type="module">
+      // 1. استيراد كل الدوال المطلوبة في مكان واحد لتجنب التكرار
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithPopup,
+        GoogleAuthProvider,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-  // تهيئة Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+      const firebaseConfig = {
+        apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
+        authDomain: "coratn-6de48.firebaseapp.com",
+        projectId: "coratn-6de48",
+        storageBucket: "coratn-6de48.firebasestorage.app",
+        messagingSenderId: "249208103888",
+        appId: "1:249208103888:web:9403ce3af4c00bfe6f0fd5",
+        measurementId: "G-WQM9SRLPN9",
+      };
 
-  // ربط الزر بالدالة
-  window.signInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // إذا نجح تسجيل الدخول
-        console.log("تم تسجيل الدخول بنجاح:", result.user);
-        alert("مرحباً بك يا " + result.user.displayName);
-      })
-      .catch((error) => {
-        // إذا حدث خطأ
-        console.error("حدث خطأ:", error);
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      // 2. مراقب حالة المستخدم (الحارس)
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          console.log("المستخدم موجود:", user.displayName);
+          // التوجيه للصفحة الرئيسية إذا نجح الدخول
+          if (
+            window.location.pathname.includes("login.html") ||
+            window.location.pathname.endsWith("/")
+          ) {
+            window.location.href = "home.html";
+          }
+        } else {
+          console.log("لا يوجد مستخدم مسجل");
+        }
       });
-  };
-</script>
-    </body>
+
+      // 3. دالة تسجيل الدخول بجوجل
+      // جعل الدالة متاحة عالمياً لكي يعمل زر onclick
+      window.signInWithGoogle = () => {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            console.log("تم تسجيل الدخول بنجاح:", result.user);
+          })
+          .catch((error) => {
+            console.error("حدث خطأ:", error.message);
+          });
+      };
+    </script>
+  </body>
 </html>
