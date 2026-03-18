@@ -2,50 +2,44 @@
 <html lang="ar">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="login.css" />
   </head>
   <body>
     <div class="logincontainer">
       <div class="content">
-        <h1>Welcome back,</h1>
-        <form id="loginForm">
-          <input type="email" placeholder="e-mail" id="email" required />
+        <h1>Create Account</h1>
+        <form id="signupForm">
+          <input type="email" id="email" placeholder="Email" required />
           <br />
           <input
             type="password"
             id="password"
-            placeholder="password"
+            placeholder="Password (Min 5 chars)"
             required
           />
           <br />
-          <button type="submit" class="loginbtn">Login</button>
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm Password"
+            required
+          />
+          <br />
+          <button type="submit" class="loginbtn">Sign Up</button>
         </form>
-
-        <button onclick="signInWithGoogle()" class="googlebtn">
-          Sign in with Google
-        </button>
-
-        <div>
-          <p>
-            Don't have an account?
-            <a class="singup" href="singup.html">Sign up</a>
-          </p>
-        </div>
+        <p>Already have an account? <a href="login.html">Login</a></p>
       </div>
     </div>
 
     <script type="module">
-      // 1. استيراد الدوال المطلوبة (أضفنا signInWithEmailAndPassword)
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
       import {
         getAuth,
-        signInWithPopup,
-        GoogleAuthProvider,
-        onAuthStateChanged,
-        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
       } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
+      // نفس إعدادات Firebase الخاصة بك
       const firebaseConfig = {
         apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
         authDomain: "coratn-6de48.firebaseapp.com",
@@ -58,68 +52,39 @@
 
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
-      const provider = new GoogleAuthProvider();
 
-      // عناصر الواجهة
-      const form = document.getElementById("loginForm");
-      const emailInput = document.getElementById("email");
-      const passwordInput = document.getElementById("password");
+      const signupForm = document.getElementById("signupForm");
 
-      // 2. معالجة نموذج تسجيل الدخول
-      form.addEventListener("submit", function (event) {
-        event.preventDefault(); // منع الصفحة من التحديث
+      signupForm.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-        const emailValue = emailInput.value;
-        const passwordValue = passwordInput.value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
 
-        // التحقق من الإيميل (يفضل استخدام regex أو فحص بسيط لـ @)
-        if (!emailValue.includes("@")) {
-          alert("Incorrect Email: Please enter a valid email address.");
-          emailInput.focus();
+        // 1. فحص طول كلمة السر (شرط الـ 5 أحرف)
+        if (password.length < 6) {
+          alert("Password too short! Must be at least 5 characters.");
           return;
         }
 
-        // التحقق من طول كلمة المرور
-        if (passwordValue.length < 5) {
-          alert("Password too short: It must be at least 5 characters long.");
-          passwordInput.focus();
+        // 2. فحص تطابق كلمتي السر
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
           return;
         }
 
-        // --- تنفيذ تسجيل الدخول الفعلي عبر Firebase ---
-        signInWithEmailAndPassword(auth, emailValue, passwordValue)
+        // 3. إنشاء الحساب في Firebase
+        createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            console.log("Logged in successfully:", userCredential.user);
-            window.location.href = "home.html"; // التوجيه بعد النجاح
-          })
-          .catch((error) => {
-            console.error("Login Error:", error.message);
-            alert("Login failed: " + error.message); // تنبيه المستخدم في حال الخطأ
-          });
-      });
-
-      // 3. مراقب حالة المستخدم (الحارس)
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          if (
-            window.location.pathname.includes("login.html") ||
-            window.location.pathname.endsWith("/")
-          ) {
+            alert("Account created successfully!");
             window.location.href = "home.html";
-          }
-        }
-      });
-
-      // 4. دالة جوجل
-      window.signInWithGoogle = () => {
-        signInWithPopup(auth, provider)
-          .then((result) => {
-            console.log("Google login success:", result.user);
           })
           .catch((error) => {
-            console.error("Google error:", error.message);
+            alert("Error: " + error.message);
           });
-      };
+      });
     </script>
   </body>
 </html>

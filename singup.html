@@ -1,131 +1,124 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Singup</title>
-        <link rel="stylesheet" href="SINGUP.CSS">
-    </head> 
-    <body>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="SINGUP.CSS" />
+  </head>
+  <body>
     <div class="logincontainer">
-        <div class="content">
-        <h1>Sing-up,</h1>
-        <form id="loginForm">
-        <input type="e-mail" placeholder="e-mail" id="email"></button>
-        <br>
-        <input type="password" id="password" placeholder="password"></button>
-        <br>
-        <input type="password" id="checkpassword" placeholder="comfirm password">
-        <button type="submit" class="singupbtn" ><a class="singuplink" href="home.html">Singup</a></button>
-        <button class="social-btn google-btn" onclick="signInWithGoogle()">Continue with Google
-        </button>
+      <div class="content">
+        <h1>Sign-up</h1>
+        <form id="signupForm">
+          <input type="email" placeholder="e-mail" id="email" required />
+          <br />
+          <input
+            type="password"
+            id="password"
+            placeholder="password"
+            required
+          />
+          <br />
+          <input
+            type="password"
+            id="checkpassword"
+            placeholder="confirm password"
+            required
+          />
+          <br />
+          <button type="submit" class="singupbtn">Signup</button>
+
+          <button
+            type="button"
+            class="social-btn google-btn"
+            onclick="signInWithGoogle()"
+          >
+            Continue with Google
+          </button>
         </form>
         <div>
-            <p>Already have an account ?  <a class="singup" href="login.html">log in</a></p>
+          <p>
+            Already have an account?
+            <a class="singup" href="login.html">log in</a>
+          </p>
         </div>
+      </div>
     </div>
-    <script>
-    const form = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const comfirm = document.getElementById('checkpassword')
-    
 
-    form.addEventListener('submit', function(event) {
-        const emailValue = emailInput.value;
-        const passwordValue = passwordInput.value;
-        const passwordcheck = comfirm.value;
-
-        // 1. التحقق من علامة @ في الإيميل
-        if (!emailValue.includes('@gmail.')) {
-            event.preventDefault(); 
-            alert("Incorrect Email: Your email must contain the ' @gmail. ' symbol.");
-            emailInput.focus();
-            return; // توقف عن الفحص إذا فشل الشرط الأول
-        }
-
-        // 2. التحقق من أن كلمة المرور لا تقل عن 5 أحرف
-        if (passwordValue.length < 5) {
-            event.preventDefault(); // منع الإرسال
-            alert("Password too short: It must be at least 5 characters long.");
-            passwordInput.focus();
-            return;
-        }
-        if (passwordcheck = passwordValue ) {
-        }
-            else{
-                event.preventDefault();
-                alert("your password comfirm isnt correct")
-                passwordcheck.focus()
-                return
-            }
-        // إذا نجحت كل الشروط
-        console.log("Form submitted successfully!");
-    });</script>
     <script type="module">
-  // استيراد الدوال الضرورية من Firebase
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+      // 1. استيراد الدوال مرة واحدة فقط لتجنب التعارض
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithPopup,
+        GoogleAuthProvider,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-  // كود الإعداد الذي حصلت عليه من Firebase Console
-  const firebaseConfig = {
-    apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
-    authDomain: "coratn-6de48.firebaseapp.com",
-    projectId: "coratn-6de48",
-    storageBucket: "coratn-6de48.firebasestorage.app",
-    messagingSenderId: "249208103888",
-    appId: "1:249208103888:web:9403ce3af4c00bfe6f0fd5",
-    measurementId: "G-WQM9SRLPN9"
-  };
+      // استخدم config واحد فقط (تأكد أنه الخاص بمشروع coratn)
+      const firebaseConfig = {
+        apiKey: "AIzaSyCefYMTZl0i79yMQVFxOLWjPZhfWleQWW4",
+        authDomain: "coratn-6de48.firebaseapp.com",
+        projectId: "coratn-6de48",
+        storageBucket: "coratn-6de48.firebasestorage.app",
+        messagingSenderId: "249208103888",
+        appId: "1:249208103888:web:9403ce3af4c00bfe6f0fd5",
+        measurementId: "G-WQM9SRLPN9",
+      };
 
-  // تهيئة Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
 
-  // ربط الزر بالدالة
-  window.signInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // إذا نجح تسجيل الدخول
-        console.log("تم تسجيل الدخول بنجاح:", result.user);
-        alert("مرحباً بك يا " + result.user.displayName);
-      })
-      .catch((error) => {
-        // إذا حدث خطأ
-        console.error("حدث خطأ:", error);
+      // 2. معالجة الفورم (Signup Logic)
+      const form = document.getElementById("signupForm");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // منع تحديث الصفحة
+
+        const emailValue = document.getElementById("email").value;
+        const passwordValue = document.getElementById("password").value;
+        const passwordCheck = document.getElementById("checkpassword").value;
+
+        // فحص الإيميل
+        if (!emailValue.includes("@")) {
+          alert("Please enter a valid email.");
+          return;
+        }
+
+        // فحص طول كلمة المرور (Firebase يتطلب 6 أحرف تقريباً للأمان)
+        if (passwordValue.length < 5) {
+          alert("Password must be at least 5 characters long.");
+          return;
+        }
+
+        // تصحيح خطأ المقارنة (استخدام === وليس =)
+        if (passwordValue !== passwordCheck) {
+          alert("Passwords do not match!");
+          return;
+        }
+
+        // إنشاء الحساب في Firebase
+        createUserWithEmailAndPassword(auth, emailValue, passwordValue)
+          .then((userCredential) => {
+            console.log("Account created successfully!");
+            window.location.href = "home.html";
+          })
+          .catch((error) => {
+            alert("Error: " + error.message);
+          });
       });
-  };
-  import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-  import { getAuth, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAYm8QCkqYnfJBNkvAF3sba7gVnKbIstgU",
-  authDomain: "page-7652e.firebaseapp.com",
-  projectId: "page-7652e",
-  storageBucket: "page-7652e.firebasestorage.app",
-  messagingSenderId: "943083598292",
-  appId: "1:943083598292:web:1677369c486f15273a6641",
-  measurementId: "G-BJR8TCSFYQ",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export { app };
-const  auth = getAuth();
-const  provider  = new GoogleAuthProvider();
-
-// استبدل دالة تسجيل الدخول بهذا الكود
-const login = () => {
-  signInWithRedirect(auth, provider);
-};
-</script>
-
-    </body>
+      // 3. تسجيل الدخول بجوجل
+      window.signInWithGoogle = () => {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            window.location.href = "home.html";
+          })
+          .catch((error) => {
+            console.error("Google Error:", error);
+          });
+      };
+    </script>
+  </body>
 </html>
